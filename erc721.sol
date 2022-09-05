@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./ERC2981Royalties.sol";
 import "hardhat/console.sol";
 
-contract BharatERC721 is Ownable, ERC721URIStorage, ERC2981Royalties {
+contract BERC721 is Ownable, ERC721URIStorage, ERC2981Royalties {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
