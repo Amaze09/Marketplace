@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./ERC2981Royalties.sol";
 
-contract BharatERC1155 is ERC1155, Ownable, ERC2981Royalties {
+contract BERC1155 is ERC1155, Ownable, ERC2981Royalties {
     using Strings for uint256;
     
     uint256 private _tokenIds;
