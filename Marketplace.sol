@@ -595,7 +595,7 @@ abstract contract Ownable is Context {
 pragma solidity ^0.8.4;
 
 
-interface BharatNFT721{
+interface NFT721{
     function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view returns(address receiver, uint256 royaltyAmount);
     function ownerOf(uint256 tokenId) external view returns (address);
     function getApproved(uint256 tokenId) external view returns (address);
@@ -612,7 +612,7 @@ interface BharatNFT721{
     ) external ;
 }
   
-interface BharatNFT1155 {
+interface NFT1155 {
     function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view returns(address receiver, uint256 royaltyAmount);
     function balanceOf(address account, uint256 id) external view returns (uint256);
     function isApprovedForAll(address account, address operator) external view returns (bool);
@@ -627,7 +627,7 @@ interface BharatNFT1155 {
 }
 
 
-contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
+contract NFTMarketplace is Ownable, ReentrancyGuard {
 
 
     using Counters for Counters.Counter;      
@@ -649,17 +649,17 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
     mapping(address => mapping(uint256 => tokenDetails721)) public auctionNfts;
 
 
-    BharatNFT721 private BERC721;   
+    NFT721 private BERC721;   
 
-    BharatNFT1155 private BERC1155;
+    NFT1155 private BERC1155;
 
     IERC20 private BERC20;
 
 
     constructor(address _erc721, address _erc1155, address _erc20) {
     
-        BERC721 = BharatNFT721(_erc721);
-        BERC1155 = BharatNFT1155(_erc1155);
+        BERC721 = NFT721(_erc721);
+        BERC1155 = NFT1155(_erc1155);
         BERC20 = IERC20(_erc20);
     }
 
@@ -764,12 +764,12 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
 
 //-------------------------------------------------------------------------------ERC721(Offer)-------------------------------------------------------------------------------//
 
-    // First, Bharat token approval is required for making offer.
+    // First, token approval is required for making offer.
 
 
     function makeOffer(address _nft, uint256 _tokenId, uint128 _offer) external nonReentrant  {
 
-    require(BERC20.allowance(msg.sender, address(this)) >= _offer, "Bharat token not approved");
+    require(BERC20.allowance(msg.sender, address(this)) >= _offer, "token not approved");
 
     Offer storage offer = offerNfts[_nft][_tokenId];
 
@@ -822,7 +822,7 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
             }
         }
 
-        require(BERC20.allowance(_offerer, address(this)) >= offerAmount, "Bharat token not approved");
+        require(BERC20.allowance(_offerer, address(this)) >= offerAmount, "token not approved");
 
         offer.isAccepted = true;
 
@@ -978,7 +978,7 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
     function createTokenAuction721(
         address _nft,
         uint128 _tokenId,
-        uint128 _price,  // In wei and in bharat token
+        uint128 _price,  // In wei and in token
         uint32 _duration
     ) external {
 
@@ -1011,7 +1011,7 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
         tokenDetails721 storage auction = auctionNfts[_nft][_tokenId];
 
         require(_amount >= auction.price, "Bid less than price");
-        require(BERC20.allowance(msg.sender, address(this)) >= _amount, "Bharat token not approved");
+        require(BERC20.allowance(msg.sender, address(this)) >= _amount, "token not approved");
         require(auction.isActive, "auction not active");
         require(auction.duration > block.timestamp, "Deadline already passed");
 
@@ -1051,7 +1051,7 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
 
         if (address(_nft) == address(BERC721)) {
 
-            require(BERC20.allowance(auction.maxBidUser, address(this)) >= auction.maxBid, "Bharat token not approved by bidder");
+            require(BERC20.allowance(auction.maxBidUser, address(this)) >= auction.maxBid, "token not approved by bidder");
 
             (address royaltyReceiver, uint256 royaltyAmount) = getRoyalties721(
                 _tokenId,
@@ -1073,7 +1073,7 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
 
         } else {
 
-            require(BERC20.allowance(auction.maxBidUser, address(this)) >= auction.maxBid, "Bharat token not approved by bidder");
+            require(BERC20.allowance(auction.maxBidUser, address(this)) >= auction.maxBid, "token not approved by bidder");
 
             BERC20.transferFrom(auction.maxBidUser, auction.seller,  ((auction.maxBid)*(100 - commission))/100);
 
@@ -1111,6 +1111,7 @@ contract BharatNFTMarketplace is Ownable, ReentrancyGuard {
 
 //-----------------------------------------------------------------------------ERC1155--------------------------------------------------------------------------------//
 
+    // First, NFT approval is required.
 
     function listToken1155(address _nft, uint128 tokenId, uint128 amount, uint128 price, address[] memory privateBuyer) public nonReentrant returns(uint256) {
         require(amount > 0, "Amount must be greater than 0!");
