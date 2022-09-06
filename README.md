@@ -11,4 +11,4 @@ Multiple NFTs (ERC1155s) have a simple listing and buying function but at the ti
  
 At last, the platform owner can also set a small fees on all the trades.
 
-Created only for learning purpose, use it on your own risk. 
+Created only for learning purpose (Not production ready)
